@@ -17,7 +17,7 @@ export default function consultarContato(){
     const carregarUsarios = async () =>{
         setCarregar(true);
         const { data, error } = await supabase
-            .from("usuarios")
+            .from('usuarios')
             .select("*")
             .order("id", { ascending: false });
 
@@ -40,7 +40,6 @@ export default function consultarContato(){
              </View>
            );
         
-           // Componente para o cabeçalho da tabela
            const TableHeader = () => (
              <View style={styles.tableHeader}>
                <Text style={styles.headerCell}>ID</Text>
@@ -68,7 +67,7 @@ export default function consultarContato(){
                    data={usuarios}
                    renderItem={renderItem}
                    keyExtractor={(item) => item.id.toString()}
-                   ListHeaderComponent={TableHeader} // Adiciona o cabeçalho
+                   ListHeaderComponent={TableHeader}
                    style={styles.table}
                  />
                )}
@@ -104,11 +103,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderColor: '#ddd',
+        justifyContent: 'space-around',
         backgroundColor: '#fff',
       },
       cell: {
         flex: 1,
         padding: 10,
-        textAlign: 'left',
+        textAlign: 'center',
       },
     });

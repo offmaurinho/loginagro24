@@ -1,48 +1,46 @@
 import {
     SafeAreaView, Text, TouchableOpacity, StyleSheet,
-    ImageBackground, TextInput
+    ImageBackground, TextInput, Alert
 } from 'react-native';
 import { useState } from "react";
 import { supabase } from "../../src/supabaseClient";
-//npm install react-native-toast-message
 import Toast from "react-native-toast-message";
 
 export default function App() {
 
     const [textUsuario, setUsuario] = useState('');
     const [textSenha, setSenha] = useState('');
-
-    const dados = {
-        usuario: textUsuario,
-        senha: textSenha,
-    }
+    const [loading, setLoading] = useState(false);
 
     const enviarDados = async () => {
-        
-        const {data, error } = await supabase
-            .from('usuarios')
-            .insert([
-                {nome: dados.usuario, senha: dados.senha}
-            ])
-            .select()
+        setLoading(true);
 
-        if(error){
+        const { data, error } = await supabase.auth.signUp({
+            email: textUsuario,
+            password: textSenha,
+        });
+
+        if (error) {
+            setLoading(false);
+            Alert.alert("Erro de Cadastro", error.message); 
             Toast.show({
                 type: "error",
                 text1: "Erro!",
-                text2: "Erro ao cadastrar",
+                text2: error.message || "Erro ao cadastrar usuário.",
             });
-        }else{
-            Toast.show({
-                type: "success",
-                text1: "Sucesso!",
-                text2: "Dados Gravados com Sucesso!",
-            });
+            return; 
+        } 
+        
+        setLoading(false);
+        Toast.show({
+            type: "success",
+            text1: "Sucesso!",
+            text2: "Cadastro efetuado! Verifique seu e-mail para confirmar.",
+        });
 
-            setUsuario("");
-            setSenha("");
-        }
-    }
+        setUsuario("");
+        setSenha("");
+    };
 
     return (
         <ImageBackground>
@@ -52,7 +50,7 @@ export default function App() {
                     style={styles.campoTexto}
                     value={textUsuario}
                     onChangeText={setUsuario}
-                    placeholder='Informe seu USUARIO'
+                    placeholder='Informe seu E-MAIL'
                     autoFocus
                 />
                 <TextInput

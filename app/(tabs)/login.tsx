@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, Button, TextInput} from 'react-native';
+import {View, Text, StyleSheet, Button, TextInput, Alert} from 'react-native';
 import { supabase  } from '@/src/supabaseClient';
 import Toast from 'react-native-toast-message';
 
@@ -7,13 +7,35 @@ import { useState } from 'react';
 export default function Login(){
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [loading, setLoading] = useState(false); 
 
     const autenticar = async () => {
+        setLoading(true);
+
+        const { error, data } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: senha,
+        });
+
+        if (error) {
+            Alert.alert("Erro no Login", error.message);
+            Toast.show({
+                type: 'error',
+                text1: 'Erro',
+                text2: error.message
+            });
+            setLoading(false);
+            return;
+        }
+
         Toast.show({
             type: 'success',
             text1: 'Sucesso',
             text2: 'Login efetuado com sucesso!'
-        })
+        });
+        
+        setLoading(false);
+        console.log("Login efetuado com sucesso para o usuário:", data.user.email);
     }
 
     return(
@@ -38,6 +60,7 @@ export default function Login(){
             title='Login' 
             onPress={autenticar}
             color = '#5CBD0F'
+            disabled={loading}
             />
         </View>
       </View>
